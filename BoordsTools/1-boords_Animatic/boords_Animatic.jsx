@@ -18,7 +18,7 @@ var boords_Animatic_Data = new Object();	// Store globals in an object
 
 // Set the version
 boords_Animatic_Data.scriptName = 'Boords Tools - Animatic Setup';
-boords_Animatic_Data.version = 'V 1.0';
+boords_Animatic_Data.version = 'V 1.1';
 writeLn(boords_Animatic_Data.scriptName + " - " + boords_Animatic_Data.version);
 
 boords_Animatic_Data.boordsFolderPath = '';
@@ -32,9 +32,9 @@ boords_Animatic_Data.frameFiles = [];
 boords_Animatic_Data.topDown = true;
 
 // Promps
-boords_Animatic_Data.prompt_1 = "Select the storyboard folder downloaded from boords";
+boords_Animatic_Data.prompt_1 = "Select the storyboard folder that contains your JPG or PNG sequence";
 boords_Animatic_Data.prompt_2 = "How long in seconds would you like your animatic to be?";
-boords_Animatic_Data.prompt_3 = "Select a sound file you would like to use. Cancel to skip";
+boords_Animatic_Data.prompt_3 = "Select a sound file if you have one. Cancel if not.";
 
 
 
@@ -84,7 +84,7 @@ function boords_Animatic_popup_setFile(){
 
 	}else{
 		// POP UP SET LENGTH
-		boords_Animatic_Data.animaticLength  = prompt(boords_Animatic_Data.prompt_2, "");
+		boords_Animatic_Data.animaticLength  = prompt(boords_Animatic_Data.prompt_2,"60");
 	}
 
 }
@@ -111,13 +111,13 @@ boordsComp.label = 9;
 boordsComp.openInViewer();
 var frameFold = fold.items.addFolder("Frames");
 var soundFold = fold.items.addFolder("Sound");
-boords_Animatic_Data.soundLayer.parentFolder = soundFold;
 
-if(boords_Animatic_Data.soundLayer !== null){
-	boordsComp.layers.add(boords_Animatic_Data.soundLayer);
+if(boords_Animatic_Data.soundLayer != null){
+	boords_Animatic_Data.soundLayer.parentFolder = soundFold;
+ 	boordsComp.layers.add(boords_Animatic_Data.soundLayer);
 }
 
-
+alert("working");
 
 // GET FOLDER
 // Get the tools folders
@@ -191,48 +191,4 @@ function stringContains(haystack, needle){
 	}
 
 }
-
-//need a regex to handle how characters are wrapped in CSV
-function parseCSV(text){
-
-	var i, s;
-	var table = new Array();
-	var a = text.split(/\r*\n/);
-	var version = app.version.substring(0,1);
-	var pattern;
-	/*
-	Regex hack for CS3, CS3 is failing on the $ conditional in (?=,|\\t|$), without a negative look behind assertion,we will kludge
-	a positive look behind assertion and delete the beginning , if the text layer begins with a , this is likely to fail so don't start your 
-	match layer with a , for now, which is probably something you don't want to do anyway.
-	*/
-
-	if(version >= 8){
-		pattern = new RegExp("(^|\\t|,)(\"*|'*)(.*?)\\2(?=,|\\t|(?<,)$)", "g");
-	}else{
-		pattern = new RegExp("(^|\\t|,)(\"*|'*)(.*?)\\2(?=,|\\t|$)", "g");
-	}
-	  
-
-	for (i=0; i<a.length; i++){
-		s = a[i].replace(/""/g, '\"');	 
-		
-			if (s) {
-			var element = s.split(",");
-			var count = element.length;
-			
-			table[i] = new Array(count);
-			for (x=0; x < count; x++){
-			     if (typeof element[x] != 'undefined'){
-					if(version >= 8){
-						if(element[x].indexOf(",") == 0) element[x] =  element[x].substring(1, s.length);
-					}
-					
-					table[i][x] = element[x];
-				}
-			}
-		}
-	 }
-	 return table;
-
-};
 
