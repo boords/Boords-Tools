@@ -21,10 +21,12 @@ boords_Animatic_Data.scriptName = 'Boords Tools - Animatic Setup';
 boords_Animatic_Data.version = 'V 1.1';
 writeLn(boords_Animatic_Data.scriptName + " - " + boords_Animatic_Data.version);
 
+boords_Animatic_Data.frameRate = 25;
 boords_Animatic_Data.boordsFolderPath = '';
 boords_Animatic_Data.soundFile = '';
 boords_Animatic_Data.soundLayer = null;
 boords_Animatic_Data.boordsJsonName = '/boords.json';
+boords_Animatic_Data.frames = null;
 boords_Animatic_Data.animaticLength = 20;
 boords_Animatic_Data.comp = app.project.activeItem;
 boords_Animatic_Data.frameFiles = [];
@@ -47,6 +49,12 @@ boords_Animatic_Data.err4 = "All trackers updated";
 //boords_Animatic_Data.csvFile = app.project.file.fsName;
 //boords_Animatic_Data.csvFile = boords_Animatic_Data.csvFile.substr(0, boords_Animatic_Data.csvFile.lastIndexOf("/"));
 //boords_Animatic_Data.csvFile = boords_Animatic_Data.csvFile + boords_Animatic_Data.csvFolder;
+
+
+// Main function
+if (boords_Animatic_Data.comp){
+	app.beginUndoGroup("Boords Animatic");
+}
 
 // POP UP SET BOORDS FOLDER
 boords_Animatic_popup_setFolder();
@@ -93,31 +101,26 @@ function boords_Animatic_popup_setFile(){
 
 // // Pull JSON data
 
-// var jsonFile = boords_Animatic_Data.boordsFolderPath + boords_Animatic_Data.boordsJsonName;
-// var myFile = new File(jsonFile);
+var jsonFile = boords_Animatic_Data.boordsFolderPath + boords_Animatic_Data.boordsJsonName;
+var myFile = new File(jsonFile);
 
-// 	if(myFile.open("r")){
-// 		myFile.encoding = "UTF-8";
-// 		var myJson = myFile.read();
-// 		var myObject = JSON.parse(myJson);
-// 		myFile.close();
-// 	}
+if(myFile.open("r")){
+	myFile.encoding = "UTF-8";
+	var myJson = myFile.read();
+	var myObject = JSON.parse(myJson);
+	boords_Animatic_Data.frames = myObject.frames;
+	myFile.close();
+}
 
 
-// Create a comp
+
+// CREATE THE COMPS AND PROJECT FOLDERS
 var fold = app.project.items.addFolder("Boords Animatic");
-var boordsComp = fold.items.addComp("Animatic", 1920, 1080, 1, boords_Animatic_Data.animaticLength, 25);
+var boordsComp = fold.items.addComp("Animatic", 1920, 1080, 1, boords_Animatic_Data.animaticLength, boords_Animatic_Data.frameRate);
 boordsComp.label = 9;
 boordsComp.openInViewer();
 var frameFold = fold.items.addFolder("Frames");
-var soundFold = fold.items.addFolder("Sound");
 
-if(boords_Animatic_Data.soundLayer != null){
-	boords_Animatic_Data.soundLayer.parentFolder = soundFold;
- 	boordsComp.layers.add(boords_Animatic_Data.soundLayer);
-}
-
-alert("working");
 
 // GET FOLDER
 // Get the tools folders
@@ -167,10 +170,117 @@ for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 
 }	
 
+// IF SOUND FILE
+if(boords_Animatic_Data.soundLayer != null){
+	var soundFold = fold.items.addFolder("Sound");
+	boords_Animatic_Data.soundLayer.parentFolder = soundFold;
+ 	boordsComp.layers.add(boords_Animatic_Data.soundLayer);
+ 	notesComp.moveToBeginning();
+}
 
-// Main function
-if (boords_Animatic_Data.comp){
-	app.beginUndoGroup("Boords Animatic");
+// IF BOORDS JSON FILE
+// if(1 == 1){
+	var notesFold = fold.items.addFolder("Notes");
+	var notesComp = notesFold.items.addComp("Notes Reference", 1920, 1080, 1, boords_Animatic_Data.animaticLength, boords_Animatic_Data.frameRate);
+
+	// SETUP NOTES COMP
+	setupNotesComp(notesComp);
+
+
+ 	boordsComp.layers.add(notesComp);
+ 	notesComp.moveToBeginning();
+// }
+
+
+
+function setupNotesComp(comp) {
+	var tempComp = comp;
+
+	// Add the BG
+	var tempLayer = tempComp.layers.addShape();
+	var tempContents = tempLayer.property("ADBE Root Vectors Group");
+	// create the pupil 
+	var bgGroup = tempContents.addProperty("ADBE Vector Group");
+	bgGroup.name = "BG Group";
+
+	var bgShape = bgGroup.property("ADBE Vectors Group").addProperty("ADBE Vector Shape - Rect");
+	bgShape.name = "BG Shape";
+
+	bgShape.property("ADBE Vector Rect Size").setValue([1920, 540]);
+	tempLayer.property("ADBE Transform Group").property("ADBE Opacity").setValue(50);
+	tempLayer.property("ADBE Transform Group").property("ADBE Position").setValue([960,810]);
+
+	bgGroup.property("ADBE Vectors Group").addProperty("ADBE Vector Graphic - Fill");
+	var bgFillColour = bgGroup.property("ADBE Vectors Group").property("ADBE Vector Graphic - Fill").property("ADBE Vector Fill Color");
+	bgFillColour.setValue([0,0,0,1]);
+
+
+	var c = [60, 640, 740, 840, 940];
+
+	for (var i = 0; i < boords_Animatic_Data.frames.length; i++) {
+		
+
+		
+
+		var tempTextLayer = tempComp.layers.addText();
+		tempTextLayer.property("Source Text").setValue("Frame "+ (i+1));
+		tempTextLayer.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[1]]);
+		var textProp = tempTextLayer.property("Source Text");
+		var textDocument = textProp.value;
+		textDocument.font = "Verdana";
+		textDocument.fontSize = 50;
+		textDocument.fillColor = [1, 1, 1];
+		textProp.setValue(textDocument);
+
+		var tempTextLayer2 = tempComp.layers.addText();
+		tempTextLayer2.property("Source Text").setValue(boords_Animatic_Data.frames[i].reference);
+		tempTextLayer2.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[2]]);
+		var textProp2 = tempTextLayer2.property("Source Text");
+		var textDocument2 = textProp2.value;
+		textDocument2.font = "Verdana";
+		textDocument2.fontSize = 30;
+		textDocument2.fillColor = [1, 1, 1];
+		textProp2.setValue(textDocument2);
+
+		var tempTextLayer3 = tempComp.layers.addText();
+		tempTextLayer3.property("Source Text").setValue(boords_Animatic_Data.frames[i].voiceover);
+		tempTextLayer3.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[3]]);
+		var textProp3 = tempTextLayer3.property("Source Text");
+		var textDocument3 = textProp3.value;
+		textDocument3.font = "Verdana";
+		textDocument3.fontSize = 30;
+		textDocument3.fillColor = [1, 1, 1];
+		textProp3.setValue(textDocument3);
+
+		var tempTextLayer4 = tempComp.layers.addText();
+		tempTextLayer4.property("Source Text").setValue(boords_Animatic_Data.frames[i].direction);
+		tempTextLayer4.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[4]]);
+		var textProp4 = tempTextLayer4.property("Source Text");
+		var textDocument4 = textProp4.value;
+		textDocument4.font = "Verdana";
+		textDocument4.boxTextSize = [200,100];
+		textDocument4.fontSize = 30;
+		textDocument4.fillColor = [1, 1, 1];
+		textProp4.setValue(textDocument4);
+
+
+
+		// textProp.setValue(textDocument);
+
+		// textDocument.fontSize = 30;
+		// textProp2.setValue(textDocument);
+		// textProp3.setValue(textDocument);
+		// textProp4.setValue(textDocument);
+
+
+		break;
+	}
+
+	// Add the Text
+		// Frame number
+		// Label
+		// Sound
+		// Action
 
 }
 
