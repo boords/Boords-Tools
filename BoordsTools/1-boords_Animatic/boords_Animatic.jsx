@@ -22,6 +22,8 @@ boords_Animatic_Data.version = 'V 1.0';
 writeLn(boords_Animatic_Data.scriptName + " - " + boords_Animatic_Data.version);
 
 boords_Animatic_Data.boordsFolderPath = '';
+boords_Animatic_Data.soundFile = '';
+boords_Animatic_Data.soundLayer = null;
 boords_Animatic_Data.boordsJsonName = '/boords.json';
 boords_Animatic_Data.animaticLength = 20;
 boords_Animatic_Data.comp = app.project.activeItem;
@@ -32,6 +34,7 @@ boords_Animatic_Data.topDown = true;
 // Promps
 boords_Animatic_Data.prompt_1 = "Select the storyboard folder downloaded from boords";
 boords_Animatic_Data.prompt_2 = "How long in seconds would you like your animatic to be?";
+boords_Animatic_Data.prompt_3 = "Select a sound file you would like to use. Cancel to skip";
 
 
 
@@ -44,7 +47,6 @@ boords_Animatic_Data.err4 = "All trackers updated";
 //boords_Animatic_Data.csvFile = app.project.file.fsName;
 //boords_Animatic_Data.csvFile = boords_Animatic_Data.csvFile.substr(0, boords_Animatic_Data.csvFile.lastIndexOf("/"));
 //boords_Animatic_Data.csvFile = boords_Animatic_Data.csvFile + boords_Animatic_Data.csvFolder;
-
 
 // POP UP SET BOORDS FOLDER
 boords_Animatic_popup_setFolder();
@@ -61,8 +63,32 @@ function boords_Animatic_popup_setFolder(){
 }
 
 
-// POP UP SET LENGTH
-boords_Animatic_Data.animaticLength  = prompt(boords_Animatic_Data.prompt_2, "");
+
+// Set the sound file
+boords_Animatic_popup_setFile();
+
+function boords_Animatic_popup_setFile(){
+
+	var tempFile = File.openDialog(boords_Animatic_Data.prompt_3,undefined,true);
+
+	if (tempFile !== null)
+	{
+		boords_Animatic_Data.soundFile = tempFile;
+
+		var io = new ImportOptions(File(boords_Animatic_Data.soundFile)); 
+
+		io.importAs = ImportAsType.FOOTAGE;
+		boords_Animatic_Data.soundLayer = app.project.importFile(io);
+		//frame.parentFolder = frameFold;
+		boords_Animatic_Data.animaticLength = boords_Animatic_Data.soundLayer.duration;
+
+	}else{
+		// POP UP SET LENGTH
+		boords_Animatic_Data.animaticLength  = prompt(boords_Animatic_Data.prompt_2, "");
+	}
+
+}
+
 
 
 // // Pull JSON data
@@ -84,6 +110,13 @@ var boordsComp = fold.items.addComp("Animatic", 1920, 1080, 1, boords_Animatic_D
 boordsComp.label = 9;
 boordsComp.openInViewer();
 var frameFold = fold.items.addFolder("Frames");
+var soundFold = fold.items.addFolder("Sound");
+boords_Animatic_Data.soundLayer.parentFolder = soundFold;
+
+if(boords_Animatic_Data.soundLayer !== null){
+	boordsComp.layers.add(boords_Animatic_Data.soundLayer);
+}
+
 
 
 // GET FOLDER
@@ -94,14 +127,15 @@ var tempFiles = tempFolder.getFiles();
 
 for (var i = 0; i < tempFiles.length; i++) {
 	var fileName = tempFiles[i].name;
-	var results = fileName.indexOf('frame');
+	var results = fileName.indexOf('.jpg');
 	if(results > -1){
 		boords_Animatic_Data.frameFiles.push(tempFiles[i].name);
 	}
+	var results2 = fileName.indexOf('.png');
+	if(results2 > -1){
+		boords_Animatic_Data.frameFiles.push(tempFiles[i].name);
+	}
 }
-
-
-
 
 // IMPORT THE FRAMES
 
@@ -118,8 +152,10 @@ for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 
 	// Add Frames to comp
 	l = boordsComp.layers.add(frame);
-	l.scale.setValue([160, 160]);
-	
+
+	var scaleAmount = ((boordsComp.width / l.width)*100) + 1;
+
+	l.scale.setValue([scaleAmount, scaleAmount]);
 
 	if(boords_Animatic_Data.topDown){
 		l.inPoint = (boords_Animatic_Data.animaticLength / boords_Animatic_Data.frameFiles.length)*(i);
@@ -128,7 +164,6 @@ for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 		l.outPoint = (boords_Animatic_Data.animaticLength / boords_Animatic_Data.frameFiles.length)*(i+1);
 		l.moveToEnd()
 	}
-
 
 }	
 
