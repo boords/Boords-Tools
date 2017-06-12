@@ -121,7 +121,6 @@ boordsComp.label = 9;
 boordsComp.openInViewer();
 var frameFold = fold.items.addFolder("Frames");
 
-
 // GET FOLDER
 // Get the tools folders
 var tempFolder = new Folder(boords_Animatic_Data.boordsFolderPath);
@@ -219,8 +218,7 @@ function setupNotesComp(comp) {
 
 	for (var i = 0; i < boords_Animatic_Data.frames.length; i++) {
 		
-
-		
+		var textBoxSize = [800,100];
 
 		var tempTextLayer = tempComp.layers.addText();
 		tempTextLayer.property("Source Text").setValue("Frame "+ (i+1));
@@ -232,8 +230,9 @@ function setupNotesComp(comp) {
 		textDocument.fillColor = [1, 1, 1];
 		textProp.setValue(textDocument);
 
-		var tempTextLayer2 = tempComp.layers.addText();
+		var tempTextLayer2 = tempComp.layers.addBoxText(textBoxSize);
 		tempTextLayer2.property("Source Text").setValue(boords_Animatic_Data.frames[i].reference);
+		tempTextLayer2.property("Anchor Point").setValue([-(textBoxSize[0]/2),-(textBoxSize[1]/2)]);
 		tempTextLayer2.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[2]]);
 		var textProp2 = tempTextLayer2.property("Source Text");
 		var textDocument2 = textProp2.value;
@@ -242,8 +241,9 @@ function setupNotesComp(comp) {
 		textDocument2.fillColor = [1, 1, 1];
 		textProp2.setValue(textDocument2);
 
-		var tempTextLayer3 = tempComp.layers.addText();
+		var tempTextLayer3 = tempComp.layers.addBoxText(textBoxSize);
 		tempTextLayer3.property("Source Text").setValue(boords_Animatic_Data.frames[i].voiceover);
+		tempTextLayer3.property("Anchor Point").setValue([-(textBoxSize[0]/2),-(textBoxSize[1]/2)]);
 		tempTextLayer3.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[3]]);
 		var textProp3 = tempTextLayer3.property("Source Text");
 		var textDocument3 = textProp3.value;
@@ -252,26 +252,16 @@ function setupNotesComp(comp) {
 		textDocument3.fillColor = [1, 1, 1];
 		textProp3.setValue(textDocument3);
 
-		var tempTextLayer4 = tempComp.layers.addText();
+		var tempTextLayer4 = tempComp.layers.addBoxText(textBoxSize);
 		tempTextLayer4.property("Source Text").setValue(boords_Animatic_Data.frames[i].direction);
+		tempTextLayer4.property("Anchor Point").setValue([-(textBoxSize[0]/2),-(textBoxSize[1]/2)]);
 		tempTextLayer4.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[4]]);
 		var textProp4 = tempTextLayer4.property("Source Text");
 		var textDocument4 = textProp4.value;
 		textDocument4.font = "Verdana";
-		textDocument4.boxTextSize = [200,100];
 		textDocument4.fontSize = 30;
 		textDocument4.fillColor = [1, 1, 1];
 		textProp4.setValue(textDocument4);
-
-
-
-		// textProp.setValue(textDocument);
-
-		// textDocument.fontSize = 30;
-		// textProp2.setValue(textDocument);
-		// textProp3.setValue(textDocument);
-		// textProp4.setValue(textDocument);
-
 
 		break;
 	}
@@ -283,6 +273,9 @@ function setupNotesComp(comp) {
 		// Action
 
 }
+
+
+		
 
 function throwErr(err){
 	var title = $.fileName.substring($.fileName.lastIndexOf("/")+1, $.fileName.lastIndexOf("."));
