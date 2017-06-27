@@ -39,7 +39,7 @@ boords_Animatic_Data.topDown = true;
 boords_Animatic_Data.prompt_1 = "Select the storyboard folder that contains your JPG or PNG sequence";
 boords_Animatic_Data.prompt_2 = "How long in seconds would you like your animatic to be?";
 boords_Animatic_Data.prompt_3 = "Select a sound file if you have one. Cancel if not.";
-
+boords_Animatic_Data.prompt_4 = "Create a storyboard notes reference layer? This will take a few minutes for longer storyboards so please be patient :)";
 
 
 // Errors
@@ -200,13 +200,18 @@ if(boords_Animatic_Data.soundLayer != null){
 // IF BOORDS JSON FILE
 if(boords_Animatic_Data.frames != null){
 
-	var notesFold = fold.items.addFolder("Notes");
-	var notesComp = notesFold.items.addComp("Notes Reference", 1920, 1080, 1, boords_Animatic_Data.animaticLength, boords_Animatic_Data.frameRate);
+	if (confirm(boords_Animatic_Data.prompt_4)) {
+		
+		var notesFold = fold.items.addFolder("Notes");
+		var notesComp = notesFold.items.addComp("Notes Reference", 1920, 1080, 1, boords_Animatic_Data.animaticLength, boords_Animatic_Data.frameRate);
 
-	// SETUP NOTES COMP AND MOVE TO BEGINNING
-	setupNotesComp(notesComp);
- 	boordsComp.layers.add(notesComp);
- 	notesComp.moveToBeginning();
+		// SETUP NOTES COMP AND MOVE TO BEGINNING
+		setupNotesComp(notesComp);
+	 	boordsComp.layers.add(notesComp);
+	 	notesComp.moveToBeginning();
+	
+	}
+
 }
 
 
