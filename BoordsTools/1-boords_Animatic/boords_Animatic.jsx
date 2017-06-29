@@ -11,7 +11,6 @@
 // JSON PARSER
 if(typeof JSON!=="object"){JSON={}}(function(){"use strict";function f(e){return e<10?"0"+e:e}function quote(e){escapable.lastIndex=0;return escapable.test(e)?'"'+e.replace(escapable,function(e){var t=meta[e];return typeof t==="string"?t:"\\u"+("0000"+e.charCodeAt(0).toString(16)).slice(-4)})+'"':'"'+e+'"'}function str(e,t){var n,r,i,s,o=gap,u,a=t[e];if(a&&typeof a==="object"&&typeof a.toJSON==="function"){a=a.toJSON(e)}if(typeof rep==="function"){a=rep.call(t,e,a)}switch(typeof a){case"string":return quote(a);case"number":return isFinite(a)?String(a):"null";case"boolean":case"null":return String(a);case"object":if(!a){return"null"}gap+=indent;u=[];if(Object.prototype.toString.apply(a)==="[object Array]"){s=a.length;for(n=0;n<s;n+=1){u[n]=str(n,a)||"null"}i=u.length===0?"[]":gap?"[\n"+gap+u.join(",\n"+gap)+"\n"+o+"]":"["+u.join(",")+"]";gap=o;return i}if(rep&&typeof rep==="object"){s=rep.length;for(n=0;n<s;n+=1){if(typeof rep[n]==="string"){r=rep[n];i=str(r,a);if(i){u.push(quote(r)+(gap?": ":":")+i)}}}}else{for(r in a){if(Object.prototype.hasOwnProperty.call(a,r)){i=str(r,a);if(i){u.push(quote(r)+(gap?": ":":")+i)}}}}i=u.length===0?"{}":gap?"{\n"+gap+u.join(",\n"+gap)+"\n"+o+"}":"{"+u.join(",")+"}";gap=o;return i}}if(typeof Date.prototype.toJSON!=="function"){Date.prototype.toJSON=function(){return isFinite(this.valueOf())?this.getUTCFullYear()+"-"+f(this.getUTCMonth()+1)+"-"+f(this.getUTCDate())+"T"+f(this.getUTCHours())+":"+f(this.getUTCMinutes())+":"+f(this.getUTCSeconds())+"Z":null};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(){return this.valueOf()}}var cx,escapable,gap,indent,meta,rep;if(typeof JSON.stringify!=="function"){escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;meta={"\b":"\\b","	":"\\t","\n":"\\n","\f":"\\f","\r":"\\r",'"':'\\"',"\\":"\\\\"};JSON.stringify=function(e,t,n){var r;gap="";indent="";if(typeof n==="number"){for(r=0;r<n;r+=1){indent+=" "}}else if(typeof n==="string"){indent=n}rep=t;if(t&&typeof t!=="function"&&(typeof t!=="object"||typeof t.length!=="number")){throw new Error("JSON.stringify")}return str("",{"":e})}}if(typeof JSON.parse!=="function"){cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;JSON.parse=function(text,reviver){function walk(e,t){var n,r,i=e[t];if(i&&typeof i==="object"){for(n in i){if(Object.prototype.hasOwnProperty.call(i,n)){r=walk(i,n);if(r!==undefined){i[n]=r}else{delete i[n]}}}}return reviver.call(e,t,i)}var j;text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(e){return"\\u"+("0000"+e.charCodeAt(0).toString(16)).slice(-4)})}if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,"@").replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,"]").replace(/(?:^|:|,)(?:\s*\[)+/g,""))){j=eval("("+text+")");return typeof reviver==="function"?walk({"":j},""):j}throw new SyntaxError("JSON.parse")}}})()
 
-
 // Clear info log
 clearOutput(); // Clears the info screen each time the script is run
 
@@ -23,6 +22,7 @@ boords_Animatic_Data.scriptName = 'Boords Tools - Animatic Setup';
 boords_Animatic_Data.version = 'V 1.2';
 writeLn(boords_Animatic_Data.scriptName + " - " + boords_Animatic_Data.version);
 
+// Script variables
 boords_Animatic_Data.frameRate = 25;
 boords_Animatic_Data.boordsFolderPath = '';
 boords_Animatic_Data.soundFile = '';
@@ -32,7 +32,6 @@ boords_Animatic_Data.frames = null;
 boords_Animatic_Data.animaticLength = 20;
 boords_Animatic_Data.comp = app.project.activeItem;
 boords_Animatic_Data.frameFiles = [];
-
 boords_Animatic_Data.topDown = true;
 
 // Promps
@@ -41,18 +40,14 @@ boords_Animatic_Data.prompt_2 = "How long in seconds would you like your animati
 boords_Animatic_Data.prompt_3 = "Select a sound file if you have one. Cancel if not.";
 boords_Animatic_Data.prompt_4 = "Create a storyboard notes reference layer? This will take a few minutes for longer storyboards so please be patient :)";
 
-
 // Errors
 boords_Animatic_Data.err1 = "Select a master null and master particle.";
 boords_Animatic_Data.err2 = "You have selected 2 layers however one must be the null and one the particle.";
 boords_Animatic_Data.err4 = "All trackers updated";
 
-
 // Naming
 boords_Animatic_Data.nameOfComp = "Animatic";
 boords_Animatic_Data.storyboardName = "Boords Import";
-
-
 
 // Expressions
 boords_Animatic_Data.textExpressionPart1 = 	"if(time < comp('"+boords_Animatic_Data.nameOfComp+"').layer('frame-";
@@ -60,15 +55,13 @@ boords_Animatic_Data.textExpressionPart2 = 	"').inPoint && time >= comp('"+boord
 boords_Animatic_Data.textExpressionPart3 =	"').inPoint){100}else{0};";
 boords_Animatic_Data.textExpressionPart4 = 	"if(time >= comp('"+boords_Animatic_Data.nameOfComp+"').layer('frame-";
 
-//boords_Animatic_Data.csvFile = app.project.file.fsName;
-//boords_Animatic_Data.csvFile = boords_Animatic_Data.csvFile.substr(0, boords_Animatic_Data.csvFile.lastIndexOf("/"));
-//boords_Animatic_Data.csvFile = boords_Animatic_Data.csvFile + boords_Animatic_Data.csvFolder;
 
-
+//
+//
 // Start undo group
 app.beginUndoGroup("Boords Animatic");
 
-// POP UP SET BOORDS FOLDER
+// Set Boords Folder
 boords_Animatic_popup_setFolder();
 
 function boords_Animatic_popup_setFolder(){
@@ -84,8 +77,6 @@ function boords_Animatic_popup_setFolder(){
 	}
 
 }
-
-
 
 // Set the sound file
 boords_Animatic_popup_setFile();
@@ -113,9 +104,7 @@ function boords_Animatic_popup_setFile(){
 }
 
 
-
-// // Pull JSON data
- 
+// Pull JSON data
 var jsonFile = boords_Animatic_Data.boordsFolderPath + boords_Animatic_Data.boordsJsonName;
 var myFile = new File(jsonFile);
 
@@ -132,19 +121,18 @@ if(myFile.open("r")){
 }
 
 
-
 // CREATE THE COMPS AND PROJECT FOLDERS
 var fold = app.project.items.addFolder("Boords Animatic");
 var boordsComp = fold.items.addComp("Animatic", 1920, 1080, 1, boords_Animatic_Data.animaticLength, boords_Animatic_Data.frameRate);
 boordsComp.label = 9;
 boordsComp.openInViewer();
 var frameFold = fold.items.addFolder("Frames");
-
-// GET FOLDER
-// Get the tools folders
 var tempFolder = new Folder(boords_Animatic_Data.boordsFolderPath);
 var tempFiles = tempFolder.getFiles();
 
+
+
+// IMPORT THE FRAMES
 
 for (var i = 0; i < tempFiles.length; i++) {
 	var fileName = tempFiles[i].name;
@@ -157,8 +145,6 @@ for (var i = 0; i < tempFiles.length; i++) {
 		boords_Animatic_Data.frameFiles.push(tempFiles[i].name);
 	}
 }
-
-// IMPORT THE FRAMES
 
 for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 		
@@ -174,11 +160,12 @@ for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 	// Add Frames to comp
 	l = boordsComp.layers.add(frame);
 
+	// Scale the frames to the comp
 	var scaleAmount = ((boordsComp.width / l.width)*100) + 1;
-
 	l.scale.setValue([scaleAmount, scaleAmount]);
 	l.name = "frame-"+i;
 
+	// Order frames depending on topDown booleon
 	if(boords_Animatic_Data.topDown){
 		l.inPoint = (boords_Animatic_Data.animaticLength / boords_Animatic_Data.frameFiles.length)*(i);
 		l.moveToBeginning();
@@ -189,7 +176,7 @@ for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 
 }	
 
-// IF SOUND FILE
+// IF Sound file
 if(boords_Animatic_Data.soundLayer != null){
 	var soundFold = fold.items.addFolder("Sound");
 	boords_Animatic_Data.soundLayer.parentFolder = soundFold;
@@ -197,11 +184,12 @@ if(boords_Animatic_Data.soundLayer != null){
  	soundLayer.moveToBeginning();
 }
 
-// IF BOORDS JSON FILE
+// IF Boords JSON file
 if(boords_Animatic_Data.frames != null){
 
 	if (confirm(boords_Animatic_Data.prompt_4)) {
 		
+
 		var notesFold = fold.items.addFolder("Notes");
 		var notesComp = notesFold.items.addComp("Notes Reference", 1920, 1080, 1, boords_Animatic_Data.animaticLength, boords_Animatic_Data.frameRate);
 
@@ -214,8 +202,9 @@ if(boords_Animatic_Data.frames != null){
 
 }
 
+// FUNCTIONS
 
-
+// Setup Notes compostion
 function setupNotesComp(comp) {
 	var tempComp = comp;
 
@@ -354,13 +343,13 @@ function setupNotesComp(comp) {
 
 }
 
-
+// Throw Error
 function throwErr(err){
 	var title = $.fileName.substring($.fileName.lastIndexOf("/")+1, $.fileName.lastIndexOf("."));
 	alert(err, title, true);
 }
 
-
+// String contains
 function stringContains(haystack, needle){
 
 	var results = haystack.indexOf(needle);
