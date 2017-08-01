@@ -19,7 +19,7 @@ var boords_Animatic_Data = new Object();	// Store globals in an object
 
 // Set the version
 boords_Animatic_Data.scriptName = 'Boords Tools - Animatic Setup';
-boords_Animatic_Data.version = 'V 1.2';
+boords_Animatic_Data.version = 'V 1.3';
 writeLn(boords_Animatic_Data.scriptName + " - " + boords_Animatic_Data.version);
 
 // Script variables
@@ -73,7 +73,7 @@ function boords_Animatic_popup_setFolder(){
 		
 	}
 	else{
-		app.cancelTask("Boords Animatic");
+		//app.cancelTask("Boords Animatic");
 	}
 
 }
@@ -153,8 +153,12 @@ for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 
 	var io = new ImportOptions(File(tempImg)); 
 
+
+
 	io.importAs = ImportAsType.FOOTAGE;
+
 	var frame = app.project.importFile(io);
+
 	frame.parentFolder = frameFold;
 
 	// Add Frames to comp
@@ -234,6 +238,7 @@ function setupNotesComp(comp) {
 	titleTextLayer.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[5]]);
 	var titleProp = titleTextLayer.property("Source Text");
 	var titleDocument = titleProp.value;
+	titleDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
 	titleDocument.font = "Verdana";
 	titleDocument.fontSize = 50;
 	titleDocument.fillColor = [1, 1, 1];
@@ -245,6 +250,7 @@ function setupNotesComp(comp) {
 	subTitleTextLayer1.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[6]]);
 	var subTitleProp1 = subTitleTextLayer1.property("Source Text");
 	var subTitleDocument1 = subTitleProp1.value;
+	subTitleDocument1.justification = ParagraphJustification.LEFT_JUSTIFY;
 	subTitleDocument1.font = "Verdana";
 	subTitleDocument1.fontSize = 20;
 	subTitleDocument1.fillColor = [1, 1, 1];
@@ -255,6 +261,7 @@ function setupNotesComp(comp) {
 	subTitleTextLayer2.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[7]]);
 	var subTitleProp2 = subTitleTextLayer2.property("Source Text");
 	var subTitleDocument2 = subTitleProp2.value;
+	subTitleDocument2.justification = ParagraphJustification.LEFT_JUSTIFY;
 	subTitleDocument2.font = "Verdana";
 	subTitleDocument2.fontSize = 20;
 	subTitleDocument2.fillColor = [1, 1, 1];
@@ -281,6 +288,7 @@ function setupNotesComp(comp) {
 		tempTextLayer.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[1]]);
 		var textProp = tempTextLayer.property("Source Text");
 		var textDocument = textProp.value;
+		textDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
 		textDocument.font = "Verdana";
 		textDocument.fontSize = 30;
 		textDocument.fillColor = [1, 1, 1];
@@ -290,13 +298,13 @@ function setupNotesComp(comp) {
 		textOpacity.setValue(0);
 		textOpacity.expression = textExpression;
 
-
 		var tempTextLayer2 = tempComp.layers.addBoxText(textBoxSize);
 		tempTextLayer2.property("Source Text").setValue(boords_Animatic_Data.frames[i].label);
 		tempTextLayer2.property("Anchor Point").setValue([-(textBoxSize[0]/2),-(textBoxSize[1]/2)]);
 		tempTextLayer2.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[2]]);
 		var textProp2 = tempTextLayer2.property("Source Text");
 		var textDocument2 = textProp2.value;
+		textDocument2.justification = ParagraphJustification.LEFT_JUSTIFY;
 		textDocument2.font = "Verdana";
 		textDocument2.fontSize = 20;
 		textDocument2.fillColor = [1, 1, 1];
@@ -313,6 +321,7 @@ function setupNotesComp(comp) {
 		tempTextLayer3.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[3]]);
 		var textProp3 = tempTextLayer3.property("Source Text");
 		var textDocument3 = textProp3.value;
+		textDocument3.justification = ParagraphJustification.LEFT_JUSTIFY;
 		textDocument3.font = "Verdana";
 		textDocument3.fontSize = 30;
 		textDocument3.fillColor = [1, 1, 1];
@@ -328,6 +337,7 @@ function setupNotesComp(comp) {
 		tempTextLayer4.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[4]]);
 		var textProp4 = tempTextLayer4.property("Source Text");
 		var textDocument4 = textProp4.value;
+		textDocument4.justification = ParagraphJustification.LEFT_JUSTIFY;
 		textDocument4.font = "Verdana";
 		textDocument4.fontSize = 30;
 		textDocument4.fillColor = [1, 1, 1];
