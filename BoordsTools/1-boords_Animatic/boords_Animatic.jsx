@@ -19,11 +19,15 @@ var boords_Animatic_Data = new Object();	// Store globals in an object
 
 // Set the version
 boords_Animatic_Data.scriptName = 'Boords Tools - Animatic Setup';
-boords_Animatic_Data.version = 'V 1.3';
+boords_Animatic_Data.version = 'V 1.4';
 writeLn(boords_Animatic_Data.scriptName + " - " + boords_Animatic_Data.version);
 
 // Script variables
 boords_Animatic_Data.frameRate = 25;
+boords_Animatic_Data.ratio = 0;
+
+boords_Animatic_Data.sizes = [[1920, 1080],[1080,1080],[1080,1920]];
+
 boords_Animatic_Data.boordsFolderPath = '';
 boords_Animatic_Data.soundFile = '';
 boords_Animatic_Data.soundLayer = null;
@@ -33,6 +37,8 @@ boords_Animatic_Data.animaticLength = 20;
 boords_Animatic_Data.comp = app.project.activeItem;
 boords_Animatic_Data.frameFiles = [];
 boords_Animatic_Data.topDown = true;
+boords_Animatic_Data.isBoordsDownload = false;
+boords_Animatic_Data.soundFile = null;
 
 // Promps
 boords_Animatic_Data.prompt_1 = "Select the storyboard folder that contains your JPG or PNG sequence";
@@ -70,6 +76,30 @@ function boords_Animatic_popup_setFolder(){
 	if (folder !== null)
 	{
 		boords_Animatic_Data.boordsFolderPath = folder.fsName;
+
+		// Find out whether this is a Boords download folder. 
+		// If so grab the durations from the frames
+		// Pull JSON data
+
+		var jsonFile = boords_Animatic_Data.boordsFolderPath + boords_Animatic_Data.boordsJsonName;
+		var myFile = new File(jsonFile);
+
+		if(myFile.open("r")){
+			myFile.encoding = "UTF-8";
+			var myJson = myFile.read();
+
+			var myObject = JSON.parse(myJson);
+
+			boords_Animatic_Data.frames = myObject.frames;
+			boords_Animatic_Data.storyboardName = myObject.name;
+			boords_Animatic_Data.ratio = myObject.ratio;
+
+			// set isBoordsDownload to true
+			boords_Animatic_Data.isBoordsDownload = true;
+
+			myFile.close();
+		}
+
 		
 	}
 	else{
@@ -78,8 +108,24 @@ function boords_Animatic_popup_setFolder(){
 
 }
 
+// CHECK FOR SOUND FILE
+
+var tempFolder1 = new Folder(boords_Animatic_Data.boordsFolderPath);
+var tempFiles1 = tempFolder1.getFiles();
+
+for (var i = 0; i < tempFiles1.length; i++) {
+	var fileName = tempFiles1[i].name;
+	var results = fileName.indexOf('Sound');
+	if(results > -1){
+		boords_Animatic_Data.soundFile = tempFiles1[i].name;
+	}
+}
+
 // Set the sound file
-boords_Animatic_popup_setFile();
+if(boords_Animatic_Data.soundFile == null){
+	boords_Animatic_popup_setFile();
+}
+
 
 function boords_Animatic_popup_setFile(){
 
@@ -96,34 +142,42 @@ function boords_Animatic_popup_setFile(){
 		//frame.parentFolder = frameFold;
 		boords_Animatic_Data.animaticLength = boords_Animatic_Data.soundLayer.duration;
 
+	}else if(boords_Animatic_Data.isBoordsDownload == false){
+		// POP UP SET LENGTH IF NOT DOWNLOADED FROM BOORDS
+		boords_Animatic_Data.animaticLength = prompt(boords_Animatic_Data.prompt_2,"60");
 	}else{
-		// POP UP SET LENGTH
-		boords_Animatic_Data.animaticLength  = prompt(boords_Animatic_Data.prompt_2,"60");
+		// SET LENGTH BASSED ON SUM OF DURATIONS
+		boords_Animatic_Data.animaticLength = boords_Animatic_calculateDuration();
+		writeLn(boords_Animatic_Data.animaticLength);
 	}
 
 }
 
+function boords_Animatic_calculateDuration(){
+			
+	var duration = 0;
 
-// Pull JSON data
-var jsonFile = boords_Animatic_Data.boordsFolderPath + boords_Animatic_Data.boordsJsonName;
-var myFile = new File(jsonFile);
+	//calcualte duration based on frames duration
+	for (var i = 0; i < boords_Animatic_Data.frames.length; i++) {
+		
+		duration += boords_Animatic_Data.frames[i].duration;
+		//writeLn(duration);
+	}
 
-if(myFile.open("r")){
-	myFile.encoding = "UTF-8";
-	var myJson = myFile.read();
+	return duration/1000;
 
-	var myObject = JSON.parse(myJson);
-
-	boords_Animatic_Data.frames = myObject.frames;
-	boords_Animatic_Data.storyboardName = myObject.name;
-
-	myFile.close();
 }
 
 
+
 // CREATE THE COMPS AND PROJECT FOLDERS
+
+// Get the ratio
+var r = boords_Animatic_Data.ratio;
+
+
 var fold = app.project.items.addFolder("Boords Animatic");
-var boordsComp = fold.items.addComp("Animatic", 1920, 1080, 1, boords_Animatic_Data.animaticLength, boords_Animatic_Data.frameRate);
+var boordsComp = fold.items.addComp("Animatic", boords_Animatic_Data.sizes[r][0], boords_Animatic_Data.sizes[r][1], 1, boords_Animatic_Data.animaticLength, boords_Animatic_Data.frameRate);
 boordsComp.label = 9;
 boordsComp.openInViewer();
 var frameFold = fold.items.addFolder("Frames");
@@ -144,7 +198,10 @@ for (var i = 0; i < tempFiles.length; i++) {
 	if(results2 > -1){
 		boords_Animatic_Data.frameFiles.push(tempFiles[i].name);
 	}
+
 }
+
+var frameInPoint = 0;
 
 for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 		
@@ -153,7 +210,7 @@ for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 
 	var io = new ImportOptions(File(tempImg)); 
 
-
+	
 
 	io.importAs = ImportAsType.FOOTAGE;
 
@@ -165,37 +222,65 @@ for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 	l = boordsComp.layers.add(frame);
 
 	// Scale the frames to the comp
-	var scaleAmount = ((boordsComp.width / l.width)*100) + 1;
+	var scaleAmount = ((boordsComp.width / l.width)*100);
 	l.scale.setValue([scaleAmount, scaleAmount]);
 	l.name = "frame-"+i;
 
 	// Order frames depending on topDown booleon
-	if(boords_Animatic_Data.topDown){
-		l.inPoint = (boords_Animatic_Data.animaticLength / boords_Animatic_Data.frameFiles.length)*(i);
+	if(boords_Animatic_Data.isBoordsDownload==true){
+		l.inPoint = frameInPoint/1000;
+		writeLn(frameInPoint/1000);
 		l.moveToBeginning();
 	}else{
-		l.outPoint = (boords_Animatic_Data.animaticLength / boords_Animatic_Data.frameFiles.length)*(i+1);
-		l.moveToEnd()
+		l.inPoint = (boords_Animatic_Data.animaticLength / boords_Animatic_Data.frameFiles.length)*(i);
+		l.moveToBeginning();
+	}
+
+	if(boords_Animatic_Data.isBoordsDownload == true){
+		frameInPoint += boords_Animatic_Data.frames[i].duration;
 	}
 
 }	
 
-// IF Sound file
-if(boords_Animatic_Data.soundLayer != null){
+// IF Boords Downloaded  sound file
+if(boords_Animatic_Data.soundFile){
+
+	var soundFold = fold.items.addFolder("Sound");
+
+	var tempName = boords_Animatic_Data.soundFile;
+	var tempSound = boords_Animatic_Data.boordsFolderPath + "/" + tempName;
+	var io = new ImportOptions(File(tempSound)); 
+	io.importAs = ImportAsType.FOOTAGE;
+	var soundFile = app.project.importFile(io);
+	soundFile.parentFolder = soundFold;
+
+	// Add Frames to comp
+	l = boordsComp.layers.add(soundFile);
+ 	l.moveToBeginning();
+}
+
+
+// IF user specified sound file
+if(boords_Animatic_Data.soundLayer !== null){
 	var soundFold = fold.items.addFolder("Sound");
 	boords_Animatic_Data.soundLayer.parentFolder = soundFold;
  	var soundLayer = boordsComp.layers.add(boords_Animatic_Data.soundLayer);
  	soundLayer.moveToBeginning();
 }
 
+
+
 // IF Boords JSON file
 if(boords_Animatic_Data.frames != null){
 
 	if (confirm(boords_Animatic_Data.prompt_4)) {
 		
+		// Get the ratio
+		var r = boords_Animatic_Data.ratio;
+
 
 		var notesFold = fold.items.addFolder("Notes");
-		var notesComp = notesFold.items.addComp("Notes Reference", 1920, 1080, 1, boords_Animatic_Data.animaticLength, boords_Animatic_Data.frameRate);
+		var notesComp = notesFold.items.addComp("Notes Reference",  boords_Animatic_Data.sizes[r][0], boords_Animatic_Data.sizes[r][1], 1, boords_Animatic_Data.animaticLength, boords_Animatic_Data.frameRate);
 
 		// SETUP NOTES COMP AND MOVE TO BEGINNING
 		setupNotesComp(notesComp);
@@ -211,6 +296,9 @@ if(boords_Animatic_Data.frames != null){
 // Setup Notes compostion
 function setupNotesComp(comp) {
 	var tempComp = comp;
+	// Get the ratio
+	var r = boords_Animatic_Data.ratio;
+
 
 	// Add the BG
 	var tempLayer = tempComp.layers.addShape();
@@ -222,9 +310,9 @@ function setupNotesComp(comp) {
 	var bgShape = bgGroup.property("ADBE Vectors Group").addProperty("ADBE Vector Shape - Rect");
 	bgShape.name = "BG Shape";
 
-	bgShape.property("ADBE Vector Rect Size").setValue([1400, 1080]);
+	bgShape.property("ADBE Vector Rect Size").setValue([boords_Animatic_Data.sizes[r][0],  boords_Animatic_Data.sizes[r][1]]);
 	tempLayer.property("ADBE Transform Group").property("ADBE Opacity").setValue(65);
-	tempLayer.property("ADBE Transform Group").property("ADBE Position").setValue([700,540]);
+	tempLayer.property("ADBE Transform Group").property("ADBE Position").setValue([boords_Animatic_Data.sizes[r][0]/2,boords_Animatic_Data.sizes[r][1]/2]);
 
 	bgGroup.property("ADBE Vectors Group").addProperty("ADBE Vector Graphic - Fill");
 	var bgFillColour = bgGroup.property("ADBE Vectors Group").property("ADBE Vector Graphic - Fill").property("ADBE Vector Fill Color");
@@ -238,7 +326,9 @@ function setupNotesComp(comp) {
 	titleTextLayer.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[5]]);
 	var titleProp = titleTextLayer.property("Source Text");
 	var titleDocument = titleProp.value;
+	titleDocument.resetCharStyle();
 	titleDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
+	titleDocument.font = "Verdana";
 	titleDocument.font = "Verdana";
 	titleDocument.fontSize = 50;
 	titleDocument.fillColor = [1, 1, 1];
@@ -246,10 +336,11 @@ function setupNotesComp(comp) {
 
 
 	var subTitleTextLayer1 = tempComp.layers.addText();
-	subTitleTextLayer1.property("Source Text").setValue("Sound Notes");
+	subTitleTextLayer1.property("Source Text").setValue("SOUND NOTES");
 	subTitleTextLayer1.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[6]]);
 	var subTitleProp1 = subTitleTextLayer1.property("Source Text");
 	var subTitleDocument1 = subTitleProp1.value;
+	subTitleDocument1.resetCharStyle();
 	subTitleDocument1.justification = ParagraphJustification.LEFT_JUSTIFY;
 	subTitleDocument1.font = "Verdana";
 	subTitleDocument1.fontSize = 20;
@@ -257,10 +348,11 @@ function setupNotesComp(comp) {
 	subTitleProp1.setValue(subTitleDocument1);
 
 	var subTitleTextLayer2 = tempComp.layers.addText();
-	subTitleTextLayer2.property("Source Text").setValue("Directional Notes");
+	subTitleTextLayer2.property("Source Text").setValue("DIRECTIONAL NOTES");
 	subTitleTextLayer2.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[7]]);
 	var subTitleProp2 = subTitleTextLayer2.property("Source Text");
 	var subTitleDocument2 = subTitleProp2.value;
+	subTitleDocument2.resetCharStyle();
 	subTitleDocument2.justification = ParagraphJustification.LEFT_JUSTIFY;
 	subTitleDocument2.font = "Verdana";
 	subTitleDocument2.fontSize = 20;
@@ -276,7 +368,7 @@ function setupNotesComp(comp) {
 		
 		writeLn(i + " of " + boords_Animatic_Data.frames.length);
 
-		var textBoxSize = [1150,200];
+		var textBoxSize = [860,200];
 		var textExpression = boords_Animatic_Data.textExpressionPart1+(i+1)+boords_Animatic_Data.textExpressionPart2+i+boords_Animatic_Data.textExpressionPart3;
 
 		if(i == boords_Animatic_Data.frames.length-1){
@@ -288,6 +380,7 @@ function setupNotesComp(comp) {
 		tempTextLayer.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[1]]);
 		var textProp = tempTextLayer.property("Source Text");
 		var textDocument = textProp.value;
+		textDocument.resetCharStyle();
 		textDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
 		textDocument.font = "Verdana";
 		textDocument.fontSize = 30;
@@ -304,6 +397,7 @@ function setupNotesComp(comp) {
 		tempTextLayer2.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[2]]);
 		var textProp2 = tempTextLayer2.property("Source Text");
 		var textDocument2 = textProp2.value;
+		textDocument2.resetCharStyle();
 		textDocument2.justification = ParagraphJustification.LEFT_JUSTIFY;
 		textDocument2.font = "Verdana";
 		textDocument2.fontSize = 20;
@@ -321,6 +415,7 @@ function setupNotesComp(comp) {
 		tempTextLayer3.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[3]]);
 		var textProp3 = tempTextLayer3.property("Source Text");
 		var textDocument3 = textProp3.value;
+		textDocument3.resetCharStyle();
 		textDocument3.justification = ParagraphJustification.LEFT_JUSTIFY;
 		textDocument3.font = "Verdana";
 		textDocument3.fontSize = 30;
@@ -337,6 +432,7 @@ function setupNotesComp(comp) {
 		tempTextLayer4.property("ADBE Transform Group").property("ADBE Position").setValue([c[0],c[4]]);
 		var textProp4 = tempTextLayer4.property("Source Text");
 		var textDocument4 = textProp4.value;
+		textDocument4.resetCharStyle();
 		textDocument4.justification = ParagraphJustification.LEFT_JUSTIFY;
 		textDocument4.font = "Verdana";
 		textDocument4.fontSize = 30;
