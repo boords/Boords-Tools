@@ -92,8 +92,9 @@ function boords_Animatic_popup_setFolder(){
 
 			boords_Animatic_Data.frames = myObject.frames;
 			boords_Animatic_Data.storyboardName = myObject.name;
-			boords_Animatic_Data.ratio = myObject.ratio;
-
+			if(myObject.ratio != null){
+				boords_Animatic_Data.ratio = myObject.ratio;
+			}
 			// set isBoordsDownload to true
 			boords_Animatic_Data.isBoordsDownload = true;
 
