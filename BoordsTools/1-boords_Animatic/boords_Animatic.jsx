@@ -95,6 +95,7 @@ function boords_Animatic_popup_setFolder(){
 			if(myObject.ratio != null){
 				boords_Animatic_Data.ratio = myObject.ratio;
 			}
+			
 			// set isBoordsDownload to true
 			boords_Animatic_Data.isBoordsDownload = true;
 
@@ -116,9 +117,18 @@ var tempFiles1 = tempFolder1.getFiles();
 
 for (var i = 0; i < tempFiles1.length; i++) {
 	var fileName = tempFiles1[i].name;
-	var results = fileName.indexOf('Sound');
+	var results = fileName.indexOf('sound');
 	if(results > -1){
 		boords_Animatic_Data.soundFile = tempFiles1[i].name;
+
+		var tempName = boords_Animatic_Data.soundFile;
+		var tempSound = boords_Animatic_Data.boordsFolderPath + "/" + tempName;
+		var io = new ImportOptions(File(tempSound)); 
+		io.importAs = ImportAsType.FOOTAGE;
+		var soundFile = app.project.importFile(io);
+		boords_Animatic_Data.animaticLength = soundFile.duration;
+
+
 	}
 }
 
