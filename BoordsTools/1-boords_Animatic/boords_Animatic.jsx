@@ -214,6 +214,8 @@ for (var i = 0; i < tempFiles.length; i++) {
 
 var frameInPoint = 0;
 
+boords_Animatic_Data.frameFiles = boords_Animatic_Data.frameFiles.sort();
+
 for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
 		
 	var tempName = boords_Animatic_Data.frameFiles[i];
