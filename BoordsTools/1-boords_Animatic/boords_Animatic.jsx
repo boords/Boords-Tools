@@ -272,11 +272,8 @@ app.beginUndoGroup('Boords Animatic');
 
 // Set Boords Folder
 var folder = Folder.selectDialog(boords_Animatic_Data.prompt_1);
-writeLn(boords_Animatic_Data.animaticLength);
 if (folder !== null) {
   boords_Animatic_Data.boordsFolderPath = folder.fsName;
-  writeLn('test1');
-  writeLn(boords_Animatic_Data.animaticLength);
   // Find out whether this is a Boords download folder.
   // If so grab the durations from the frames
   // Pull JSON data
@@ -285,7 +282,6 @@ if (folder !== null) {
     boords_Animatic_Data.boordsFolderPath + boords_Animatic_Data.boordsJsonName;
   var myFile = new File(jsonFile);
   writeLn('test2');
-  writeLn(boords_Animatic_Data.animaticLength);
 
   if (myFile.open('r')) {
     myFile.encoding = 'UTF-8';
@@ -328,13 +324,11 @@ for (var i = 0; i < tempFiles1.length; i++) {
     boords_Animatic_Data.animaticLength = soundFile.duration;
   }
 }
-
 // Set the sound file
 if (boords_Animatic_Data.soundFile == null) {
   boords_Animatic_popup_setFile();
 }
 
-writeLn(boords_Animatic_Data.animaticLength);
 function boords_Animatic_popup_setFile() {
   var tempFile = File.openDialog(
     boords_Animatic_Data.prompt_3,
@@ -361,8 +355,6 @@ function boords_Animatic_popup_setFile() {
   } else {
     // SET LENGTH BASSED ON SUM OF DURATIONS
     boords_Animatic_Data.animaticLength = boords_Animatic_calculateDuration();
-    writeLn('based on durations');
-    writeLn(boords_Animatic_Data.animaticLength);
   }
 }
 
@@ -378,7 +370,7 @@ function boords_Animatic_calculateDuration() {
   return duration / 1000;
 }
 
-// writeLn(boords_Animatic_Data.animaticLength);
+//
 
 // CREATE THE COMPS AND PROJECT FOLDERS
 
@@ -611,6 +603,7 @@ function setupNotesComp(comp) {
 
   for (var i = 0; i < boords_Animatic_Data.frames.length; i++) {
     writeLn(i + ' of ' + boords_Animatic_Data.frames.length);
+    var frame = frame;
 
     var textBoxSize = [860, 200];
     var textExpression =
@@ -628,7 +621,9 @@ function setupNotesComp(comp) {
     }
 
     var tempTextLayer = tempComp.layers.addText();
-    tempTextLayer.property('Source Text').setValue('Frame ' + (i + 1));
+    tempTextLayer
+      .property('Source Text')
+      .setValue('Frame ' + (frame.frame_number || i + 1));
     tempTextLayer
       .property('ADBE Transform Group')
       .property('ADBE Position')
@@ -649,9 +644,7 @@ function setupNotesComp(comp) {
     textOpacity.expression = textExpression;
 
     var tempTextLayer2 = tempComp.layers.addBoxText(textBoxSize);
-    tempTextLayer2
-      .property('Source Text')
-      .setValue(boords_Animatic_Data.frames[i].label);
+    tempTextLayer2.property('Source Text').setValue(frame.label);
     tempTextLayer2
       .property('Anchor Point')
       .setValue([-(textBoxSize[0] / 2), -(textBoxSize[1] / 2)]);
@@ -675,9 +668,7 @@ function setupNotesComp(comp) {
     textOpacity.expression = textExpression;
 
     var tempTextLayer3 = tempComp.layers.addBoxText(textBoxSize);
-    tempTextLayer3
-      .property('Source Text')
-      .setValue(boords_Animatic_Data.frames[i].voiceover);
+    tempTextLayer3.property('Source Text').setValue(frame.voiceover);
     tempTextLayer3
       .property('Anchor Point')
       .setValue([-(textBoxSize[0] / 2), -(textBoxSize[1] / 2)]);
@@ -701,9 +692,7 @@ function setupNotesComp(comp) {
     textOpacity.expression = textExpression;
 
     var tempTextLayer4 = tempComp.layers.addBoxText(textBoxSize);
-    tempTextLayer4
-      .property('Source Text')
-      .setValue(boords_Animatic_Data.frames[i].direction);
+    tempTextLayer4.property('Source Text').setValue(frame.direction);
     tempTextLayer4
       .property('Anchor Point')
       .setValue([-(textBoxSize[0] / 2), -(textBoxSize[1] / 2)]);
