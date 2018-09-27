@@ -562,7 +562,7 @@ function setupNotesComp(comp) {
       tempTextLayer = tempComp.layers.addText();
     }
 
-    tempTextLayer.property('Source Text').setValue(string);
+    tempTextLayer.property('Source Text').setValue(string || '');
 
     tempTextLayer
       .property('ADBE Transform Group')
