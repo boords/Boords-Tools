@@ -554,59 +554,55 @@ function setupNotesComp(comp) {
 
   var c = [100, 240, 180, 380, 660, 130, 350, 630];
 
-  var titleTextLayer = tempComp.layers.addText();
-  titleTextLayer
-    .property('Source Text')
-    .setValue(boords_Animatic_Data.storyboardName);
-  titleTextLayer
-    .property('ADBE Transform Group')
-    .property('ADBE Position')
-    .setValue([c[0], c[5]]);
-  var titleProp = titleTextLayer.property('Source Text');
-  var titleDocument = titleProp.value;
-  titleDocument.resetCharStyle();
-  titleDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
-  titleDocument.font = 'Verdana';
-  titleDocument.font = 'Verdana';
-  titleDocument.fontSize = 50;
-  titleDocument.fillColor = [1, 1, 1];
-  titleProp.setValue(titleDocument);
+  function addText(string, fontSize, position, textbox, anchorPoint) {
+    var tempTextLayer;
+    if (textbox) {
+      tempTextLayer = tempComp.layers.addBoxText(textBoxSize);
+    } else {
+      tempTextLayer = tempComp.layers.addText();
+    }
 
-  var subTitleTextLayer1 = tempComp.layers.addText();
-  subTitleTextLayer1.property('Source Text').setValue('SOUND NOTES');
-  subTitleTextLayer1
-    .property('ADBE Transform Group')
-    .property('ADBE Position')
-    .setValue([c[0], c[6]]);
-  var subTitleProp1 = subTitleTextLayer1.property('Source Text');
-  var subTitleDocument1 = subTitleProp1.value;
-  subTitleDocument1.resetCharStyle();
-  subTitleDocument1.justification = ParagraphJustification.LEFT_JUSTIFY;
-  subTitleDocument1.font = 'Verdana';
-  subTitleDocument1.fontSize = 20;
-  subTitleDocument1.fillColor = [1, 1, 1];
-  subTitleProp1.setValue(subTitleDocument1);
+    tempTextLayer.property('Source Text').setValue(string);
 
-  var subTitleTextLayer2 = tempComp.layers.addText();
-  subTitleTextLayer2.property('Source Text').setValue('DIRECTIONAL NOTES');
-  subTitleTextLayer2
-    .property('ADBE Transform Group')
-    .property('ADBE Position')
-    .setValue([c[0], c[7]]);
-  var subTitleProp2 = subTitleTextLayer2.property('Source Text');
-  var subTitleDocument2 = subTitleProp2.value;
-  subTitleDocument2.resetCharStyle();
-  subTitleDocument2.justification = ParagraphJustification.LEFT_JUSTIFY;
-  subTitleDocument2.font = 'Verdana';
-  subTitleDocument2.fontSize = 20;
-  subTitleDocument2.fillColor = [1, 1, 1];
-  subTitleProp2.setValue(subTitleDocument2);
+    tempTextLayer
+      .property('ADBE Transform Group')
+      .property('ADBE Position')
+      .setValue(position);
 
-  subTitleTextLayer1
+    if (anchorPoint) {
+      tempTextLayer.property('Anchor Point').setValue(anchorPoint);
+    }
+
+    var textProp = tempTextLayer.property('Source Text');
+    var textDocument = textProp.value;
+    textDocument.resetCharStyle();
+    textDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
+    textDocument.font = 'Verdana';
+    textDocument.fontSize = fontSize;
+    textDocument.fillColor = [1, 1, 1];
+    textProp.setValue(textDocument);
+
+    // Bit hacky, but it works. If we have a textExpression defined,
+    // we add it here
+    if (textExpression) {
+      var textOpacity = tempTextLayer
+        .property('ADBE Transform Group')
+        .property('ADBE Opacity');
+
+      textOpacity.setValue(0);
+      textOpacity.expression = textExpression;
+    }
+
+    return tempTextLayer;
+  }
+
+  addText(boords_Animatic_Data.storyboardName, 50, [c[0], c[5]]);
+  addText('SOUND NOTES', 20, [c[0], c[6]])
     .property('ADBE Transform Group')
     .property('ADBE Opacity')
     .setValue(50);
-  subTitleTextLayer2
+
+  addText('DIRECTIONAL NOTES', 20, [c[0], c[7]])
     .property('ADBE Transform Group')
     .property('ADBE Opacity')
     .setValue(50);
@@ -633,104 +629,20 @@ function setupNotesComp(comp) {
         boords_Animatic_Data.textExpressionPart4 +
         frameNumber +
         boords_Animatic_Data.textExpressionPart3;
-      writeLn(frame.frame_number);
-      writeLn(textExpression);
     }
 
-    var tempTextLayer = tempComp.layers.addText();
-    tempTextLayer.property('Source Text').setValue('Frame ' + frameNumber);
-    tempTextLayer
-      .property('ADBE Transform Group')
-      .property('ADBE Position')
-      .setValue([c[0], c[1]]);
-    var textProp = tempTextLayer.property('Source Text');
-    var textDocument = textProp.value;
-    textDocument.resetCharStyle();
-    textDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
-    textDocument.font = 'Verdana';
-    textDocument.fontSize = 30;
-    textDocument.fillColor = [1, 1, 1];
-    textProp.setValue(textDocument);
+    addText('Frame ' + frameNumber, 30, [c[0], c[1]]);
+    addText(frame.label, 20, [c[0], c[2]]);
 
-    var textOpacity = tempTextLayer
-      .property('ADBE Transform Group')
-      .property('ADBE Opacity');
-    textOpacity.setValue(0);
-    textOpacity.expression = textExpression;
+    addText(frame.voiceover, 30, [c[0], c[3]], 'textbox', [
+      -(textBoxSize[0] / 2),
+      -(textBoxSize[1] / 2),
+    ]);
 
-    var tempTextLayer2 = tempComp.layers.addBoxText(textBoxSize);
-    tempTextLayer2.property('Source Text').setValue(frame.label);
-    tempTextLayer2
-      .property('Anchor Point')
-      .setValue([-(textBoxSize[0] / 2), -(textBoxSize[1] / 2)]);
-    tempTextLayer2
-      .property('ADBE Transform Group')
-      .property('ADBE Position')
-      .setValue([c[0], c[2]]);
-    var textProp2 = tempTextLayer2.property('Source Text');
-    var textDocument2 = textProp2.value;
-    textDocument2.resetCharStyle();
-    textDocument2.justification = ParagraphJustification.LEFT_JUSTIFY;
-    textDocument2.font = 'Verdana';
-    textDocument2.fontSize = 20;
-    textDocument2.fillColor = [1, 1, 1];
-    textProp2.setValue(textDocument2);
-
-    textOpacity = tempTextLayer2
-      .property('ADBE Transform Group')
-      .property('ADBE Opacity');
-    textOpacity.setValue(0);
-    textOpacity.expression = textExpression;
-
-    var tempTextLayer3 = tempComp.layers.addBoxText(textBoxSize);
-    tempTextLayer3.property('Source Text').setValue(frame.voiceover);
-    tempTextLayer3
-      .property('Anchor Point')
-      .setValue([-(textBoxSize[0] / 2), -(textBoxSize[1] / 2)]);
-    tempTextLayer3
-      .property('ADBE Transform Group')
-      .property('ADBE Position')
-      .setValue([c[0], c[3]]);
-    var textProp3 = tempTextLayer3.property('Source Text');
-    var textDocument3 = textProp3.value;
-    textDocument3.resetCharStyle();
-    textDocument3.justification = ParagraphJustification.LEFT_JUSTIFY;
-    textDocument3.font = 'Verdana';
-    textDocument3.fontSize = 30;
-    textDocument3.fillColor = [1, 1, 1];
-    textProp3.setValue(textDocument3);
-
-    textOpacity = tempTextLayer3
-      .property('ADBE Transform Group')
-      .property('ADBE Opacity');
-    textOpacity.setValue(0);
-    textOpacity.expression = textExpression;
-
-    var tempTextLayer4 = tempComp.layers.addBoxText(textBoxSize);
-    tempTextLayer4.property('Source Text').setValue(frame.direction);
-    tempTextLayer4
-      .property('Anchor Point')
-      .setValue([-(textBoxSize[0] / 2), -(textBoxSize[1] / 2)]);
-    tempTextLayer4
-      .property('ADBE Transform Group')
-      .property('ADBE Position')
-      .setValue([c[0], c[4]]);
-    var textProp4 = tempTextLayer4.property('Source Text');
-    var textDocument4 = textProp4.value;
-    textDocument4.resetCharStyle();
-    textDocument4.justification = ParagraphJustification.LEFT_JUSTIFY;
-    textDocument4.font = 'Verdana';
-    textDocument4.fontSize = 30;
-    textDocument4.fillColor = [1, 1, 1];
-    textProp4.setValue(textDocument4);
-
-    textOpacity = tempTextLayer4
-      .property('ADBE Transform Group')
-      .property('ADBE Opacity');
-    textOpacity.setValue(0);
-    textOpacity.expression = textExpression;
-
-    //break;
+    addText(frame.direction, 30, [c[0], c[4]], 'textbox', [
+      -(textBoxSize[0] / 2),
+      -(textBoxSize[1] / 2),
+    ]);
   }
 }
 
