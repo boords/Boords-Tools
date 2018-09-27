@@ -281,7 +281,6 @@ if (folder !== null) {
   var jsonFile =
     boords_Animatic_Data.boordsFolderPath + boords_Animatic_Data.boordsJsonName;
   var myFile = new File(jsonFile);
-  writeLn('test2');
 
   if (myFile.open('r')) {
     myFile.encoding = 'UTF-8';
@@ -364,7 +363,6 @@ function boords_Animatic_calculateDuration() {
   //calcualte duration based on frames duration
   for (var i = 0; i < boords_Animatic_Data.frames.length; i++) {
     duration += boords_Animatic_Data.frames[i].duration;
-    //writeLn(duration);
   }
 
   return duration / 1000;
@@ -389,26 +387,34 @@ var boordsComp = fold.items.addComp(
 boordsComp.label = 9;
 boordsComp.openInViewer();
 var frameFold = fold.items.addFolder('Frames');
-var tempFolder = new Folder(boords_Animatic_Data.boordsFolderPath);
-var tempFiles = tempFolder.getFiles();
 
-// IMPORT THE FRAMES
+if (boords_Animatic_Data.isBoordsDownload) {
+  for (var i = 0; i < boords_Animatic_Data.frames.length; i++) {
+    boords_Animatic_Data.frameFiles.push(
+      boords_Animatic_Data.frames[i].file_name,
+    );
+  }
+} else {
+  var tempFolder = new Folder(boords_Animatic_Data.boordsFolderPath);
+  var tempFiles = tempFolder.getFiles();
 
-for (var i = 0; i < tempFiles.length; i++) {
-  var fileName = tempFiles[i].name;
-  var results = fileName.indexOf('.jpg');
-  if (results > -1) {
-    boords_Animatic_Data.frameFiles.push(tempFiles[i].name);
+  // IMPORT THE FRAMES
+  for (var i = 0; i < tempFiles.length; i++) {
+    var fileName = tempFiles[i].name;
+    var results = fileName.indexOf('.jpg');
+    if (results > -1) {
+      boords_Animatic_Data.frameFiles.push(tempFiles[i].name);
+    }
+    var results2 = fileName.indexOf('.png');
+    if (results2 > -1) {
+      boords_Animatic_Data.frameFiles.push(tempFiles[i].name);
+    }
   }
-  var results2 = fileName.indexOf('.png');
-  if (results2 > -1) {
-    boords_Animatic_Data.frameFiles.push(tempFiles[i].name);
-  }
+
+  boords_Animatic_Data.frameFiles = boords_Animatic_Data.frameFiles.sort();
 }
 
 var frameInPoint = 0;
-
-boords_Animatic_Data.frameFiles = boords_Animatic_Data.frameFiles.sort();
 
 for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
   var tempName = boords_Animatic_Data.frameFiles[i];
@@ -428,12 +434,16 @@ for (var i = 0; i < boords_Animatic_Data.frameFiles.length; i++) {
   // Scale the frames to the comp
   var scaleAmount = (boordsComp.width / l.width) * 100;
   l.scale.setValue([scaleAmount, scaleAmount]);
-  l.name = 'frame-' + i;
+
+  if (boords_Animatic_Data.isBoordsDownload) {
+    l.name = 'frame-' + boords_Animatic_Data.frames[i].frame_number;
+  } else {
+    l.name = 'frame-' + i;
+  }
 
   // Order frames depending on topDown booleon
   if (boords_Animatic_Data.isBoordsDownload == true) {
     l.inPoint = frameInPoint / 1000;
-    // writeLn(frameInPoint/1000);
     l.moveToBeginning();
   } else {
     l.inPoint =
@@ -603,27 +613,32 @@ function setupNotesComp(comp) {
 
   for (var i = 0; i < boords_Animatic_Data.frames.length; i++) {
     writeLn(i + ' of ' + boords_Animatic_Data.frames.length);
-    var frame = frame;
+    var frame = boords_Animatic_Data.frames[i];
+    var frameNumber = frame.frame_number || i + 1;
+
+    var nextFrameNumber = boords_Animatic_Data.frames[i + 1]
+      ? boords_Animatic_Data.frames[i + 1].frame_number
+      : i + 1;
 
     var textBoxSize = [860, 200];
     var textExpression =
       boords_Animatic_Data.textExpressionPart1 +
-      (i + 1) +
+      nextFrameNumber +
       boords_Animatic_Data.textExpressionPart2 +
-      i +
+      frameNumber +
       boords_Animatic_Data.textExpressionPart3;
 
     if (i == boords_Animatic_Data.frames.length - 1) {
-      var textExpression =
+      textExpression =
         boords_Animatic_Data.textExpressionPart4 +
-        i +
+        frameNumber +
         boords_Animatic_Data.textExpressionPart3;
+      writeLn(frame.frame_number);
+      writeLn(textExpression);
     }
 
     var tempTextLayer = tempComp.layers.addText();
-    tempTextLayer
-      .property('Source Text')
-      .setValue('Frame ' + (frame.frame_number || i + 1));
+    tempTextLayer.property('Source Text').setValue('Frame ' + frameNumber);
     tempTextLayer
       .property('ADBE Transform Group')
       .property('ADBE Position')
