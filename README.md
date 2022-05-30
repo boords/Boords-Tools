@@ -18,7 +18,7 @@ Unzip the Boords Tools Script ZIP file, and move the contents of the directory i
 
 It's important to move both the `BoordsTools` directory __AND__ the `BoordsTools.jsx` file into `ScriptUI Panels`. It won't work if you skip this. 
 
-![image](//images.ctfassets.net/ccli4xdzdc9p/2DxLW8KkCTCjQIMyvbe563/1a4eb1c9ce070bb2d20f6259528cb173/image.png)
+![image](https://images.ctfassets.net/ccli4xdzdc9p/2DxLW8KkCTCjQIMyvbe563/1a4eb1c9ce070bb2d20f6259528cb173/image.png)
 _Moving the directory and script file_
 
 On a Mac, `ScriptUI Panels` will be located within the After Effects application directory: 
@@ -44,7 +44,7 @@ The Boords Tools Script works by turning a folder you'll export from Boords into
 
 Within the storyboard you'd like to convert to an animatic, select 'After Effects > Download Images' from the export menu:
 
-![image](//images.ctfassets.net/ccli4xdzdc9p/3e5L5TOB7zmldh5Y5pZ0Dc/70a2aa2b1d005a5d519fb9c17ed8c162/image.png)
+![image](https://images.ctfassets.net/ccli4xdzdc9p/3e5L5TOB7zmldh5Y5pZ0Dc/70a2aa2b1d005a5d519fb9c17ed8c162/image.png)
 
 This will download your storyboard as a ZIP file containing everything you need to create your animatic. Go ahead and unzip it. 
 
@@ -53,19 +53,19 @@ This will download your storyboard as a ZIP file containing everything you need 
 
 With the 'Window' menu open, select the `BoordsTools.jsx` plugin. This will open the Boords Tools panel.
 
-![boords-tools-panel](//images.ctfassets.net/ccli4xdzdc9p/3J1vo93DepgVHAEmEDOQKN/ea9d47361d6303d6a638b74634a51783/boords-tools-panel.png)
+![boords-tools-panel](https://images.ctfassets.net/ccli4xdzdc9p/3J1vo93DepgVHAEmEDOQKN/ea9d47361d6303d6a638b74634a51783/boords-tools-panel.png)
 
 ### Step 3) Create your animatic
 
 Open the script, then select your Boords folder. You'll be prompted to add a sound file. Just click cancel if you don't have one. 
 
-![file-dialog](//images.ctfassets.net/ccli4xdzdc9p/2SesWN6Y4KzWncblRvpoXn/790b90f268aa72d24c85d5cc0be0b8a9/file-dialog.jpg)
+![file-dialog](https://images.ctfassets.net/ccli4xdzdc9p/2SesWN6Y4KzWncblRvpoXn/790b90f268aa72d24c85d5cc0be0b8a9/file-dialog.jpg)
 
 ### Step 4) Add sound & notes (optional)
 
 You can add a reference later with voiceover, label, and action text. The script will ask you if you'd like to do this: 
 
-![reference-layer](//images.ctfassets.net/ccli4xdzdc9p/7Eqa1ngjhbKUtlQZLbsQgI/87cd1375f0dfba65b15a076c3a5cf3c5/reference-layer.png)
+![reference-layer](https://images.ctfassets.net/ccli4xdzdc9p/7Eqa1ngjhbKUtlQZLbsQgI/87cd1375f0dfba65b15a076c3a5cf3c5/reference-layer.png)
 
 This can take a while, particularly for longer storyboards. 1 minute or longer is not uncommon. Please be patient!
 
@@ -73,6 +73,6 @@ This can take a while, particularly for longer storyboards. 1 minute or longer i
 
 ### Over to you! 
 
-![new-ae-comp](//images.ctfassets.net/ccli4xdzdc9p/7ezGW0yrZhZdlMm6BVTpfg/6e4c9ae953b94393a1c84428307f3e62/new-ae-comp.png)
+![new-ae-comp](https://images.ctfassets.net/ccli4xdzdc9p/7ezGW0yrZhZdlMm6BVTpfg/6e4c9ae953b94393a1c84428307f3e62/new-ae-comp.png)
 
 Your Boords storyboard is now an animatic in After Effects, ready for editing! 
